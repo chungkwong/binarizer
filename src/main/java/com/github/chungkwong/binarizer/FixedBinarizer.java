@@ -28,4 +28,8 @@ public class FixedBinarizer extends GlobalBinarizer{
 	protected int getThreshold(byte[] pixels,int width,int height){
 		return threshold;
 	}
+	@Override
+	public String toString(){
+		return "Fixed";
+	}
 }

@@ -68,6 +68,10 @@ public class NiblackBasedBinarizer extends GrayscaleBinarizer{
 	protected void binarize(byte[] from,byte[] to,int width,int height){
 		algorithm.binarize(from,to,width,height,windowWidth,windowHeight,formula);
 	}
+	@Override
+	public String toString(){
+		return algorithm.toString()+"("+windowHeight+"x"+windowWidth+")";
+	}
 	public static interface ThresholdFormula{
 		boolean isForeground(int pixel,long sum,long squareSum,int count);
 	}

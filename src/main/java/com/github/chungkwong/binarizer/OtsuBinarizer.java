@@ -60,4 +60,8 @@ public class OtsuBinarizer extends GlobalBinarizer{
 		}
 		return histogram;
 	}
+	@Override
+	public String toString(){
+		return "Otsu";
+	}
 }

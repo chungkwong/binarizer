@@ -73,4 +73,8 @@ public class EfficientBinarizer implements NiblackBasedBinarizer.ThresholdAlgori
 			}
 		}
 	}
+	@Override
+	public String toString(){
+		return "Chan";
+	}
 }

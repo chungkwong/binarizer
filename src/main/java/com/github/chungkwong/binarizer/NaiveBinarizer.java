@@ -46,4 +46,8 @@ public class NaiveBinarizer implements NiblackBasedBinarizer.ThresholdAlgorithm{
 			}
 		}
 	}
+	@Override
+	public String toString(){
+		return "Naive";
+	}
 }

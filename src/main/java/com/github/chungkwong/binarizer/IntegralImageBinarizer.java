@@ -99,4 +99,8 @@ public class IntegralImageBinarizer implements NiblackBasedBinarizer.ThresholdAl
 	public static final long windowValue(long[][] intImg,int width,int height,int left,int right,int top,int bottom){
 		return intImg[bottom][right]-intImg[bottom][left]-intImg[top][right]+intImg[top][left];
 	}
+	@Override
+	public String toString(){
+		return "Shafait";
+	}
 }

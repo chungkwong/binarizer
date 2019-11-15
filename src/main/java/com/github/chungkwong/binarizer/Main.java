@@ -117,7 +117,7 @@ public class Main extends JFrame{
 					return new FixedBinarizer(Integer.parseInt(fixedThreshold.getText()));
 				}else if(sauvola.isSelected()){
 					return new NiblackBasedBinarizer(
-							NiblackBasedBinarizer.getSauvola(Double.parseDouble(sauvolaWeight.getText())),
+							NiblackBasedBinarizer.getSauvolaFast(Double.parseDouble(sauvolaWeight.getText())),
 							new EfficientBinarizer(),
 							Integer.parseInt(sauvolaWindow.getText()));
 				}else if(niblack.isSelected()){
@@ -131,7 +131,7 @@ public class Main extends JFrame{
 			}
 		}
 		MethodChooser methodChooser=new MethodChooser();
-		input.add(methodChooser,BorderLayout.SOUTH);
+		input.add(new JScrollPane(methodChooser),BorderLayout.SOUTH);
 		JFileChooser fileChooser=new JFileChooser();
 		fileChooser.addActionListener((e)->{
 			File selected=fileChooser.getSelectedFile();
@@ -142,7 +142,7 @@ public class Main extends JFrame{
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
 			}
 		});
-		input.add(fileChooser,BorderLayout.CENTER);
+		input.add(new JScrollPane(fileChooser),BorderLayout.CENTER);
 		JSplitPane pane=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,input,output);
 		pane.setOneTouchExpandable(true);
 		addTab("Binarize",pane);
