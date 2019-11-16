@@ -40,7 +40,10 @@ public class NiblackBasedBinarizer extends GrayscaleBinarizer{
 		};
 	}
 	public static ThresholdFormula getSauvolaFast(double k){
-		double k2=k*k/128/128;
+		return getSauvolaFast(k,128);
+	}
+	public static ThresholdFormula getSauvolaFast(double k,double R){
+		double k2=k*k/R/R;
 		if(k>=0){
 			return (pixel,sum,squareSum,count)->{
 				double mean=((double)sum)/count;
