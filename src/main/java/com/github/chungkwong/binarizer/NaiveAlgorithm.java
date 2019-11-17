@@ -19,7 +19,7 @@ package com.github.chungkwong.binarizer;
  *
  * @author Chan Chung Kwong
  */
-public class NaiveBinarizer implements NiblackBasedBinarizer.ThresholdAlgorithm{
+public class NaiveAlgorithm implements NiblackBasedBinarizer.ThresholdAlgorithm{
 	@Override
 	public void binarize(byte[] from,byte[] to,int width,int height,int windowWidth,int windowHeight,NiblackBasedBinarizer.ThresholdFormula formula){
 		int r=windowWidth/2+1;

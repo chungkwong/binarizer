@@ -118,12 +118,12 @@ public class Main extends JFrame{
 				}else if(sauvola.isSelected()){
 					return new NiblackBasedBinarizer(
 							NiblackBasedBinarizer.getSauvolaFast(Double.parseDouble(sauvolaWeight.getText())),
-							new EfficientBinarizer(),
+							new EfficientAlgorithm(),
 							Integer.parseInt(sauvolaWindow.getText()));
 				}else if(niblack.isSelected()){
 					return new NiblackBasedBinarizer(
 							NiblackBasedBinarizer.getNiblack(Double.parseDouble(niblackWeight.getText())),
-							new EfficientBinarizer(),
+							new EfficientAlgorithm(),
 							Integer.parseInt(niblackWindow.getText()));
 				}else{
 					return new OtsuBinarizer();

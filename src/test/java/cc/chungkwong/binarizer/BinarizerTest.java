@@ -139,35 +139,38 @@ public class BinarizerTest{
 		return ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
 	}
 	public static void testNiblackImplementationsEquality(File directory,NiblackBasedBinarizer.ThresholdFormula formula,int window){
-		NiblackBasedBinarizer naive=new NiblackBasedBinarizer(formula,new NaiveBinarizer(),window);
-		NiblackBasedBinarizer integral=new NiblackBasedBinarizer(formula,new IntegralImageBinarizer(),window);
-		NiblackBasedBinarizer effient=new NiblackBasedBinarizer(formula,new EfficientBinarizer(),window);
-		testEquality(directory,naive,integral,effient);
+		NiblackBasedBinarizer naive=new NiblackBasedBinarizer(formula,new NaiveAlgorithm(),window);
+		NiblackBasedBinarizer integral=new NiblackBasedBinarizer(formula,new IntegralImageAlgorithm(),window);
+		NiblackBasedBinarizer effient=new NiblackBasedBinarizer(formula,new EfficientAlgorithm(),window);
+		testEquality(directory,/*naive,*/integral,effient);
 	}
 	public static void testFormulaEquality(File directory,int window,NiblackBasedBinarizer.ThresholdFormula... formulas){
-		testEquality(directory,Arrays.stream(formulas).map((f)->new NiblackBasedBinarizer(f,new EfficientBinarizer(),window)).toArray(Binarizer[]::new));
+		testEquality(directory,Arrays.stream(formulas).map((f)->new NiblackBasedBinarizer(f,new EfficientAlgorithm(),window)).toArray(Binarizer[]::new));
 	}
 	public static void testSpeed(File directory){
 		FixedBinarizer fixed=new FixedBinarizer(128);
 		OtsuBinarizer otsu=new OtsuBinarizer();
-		int window=32;
-		NiblackBasedBinarizer.ThresholdFormula formula=NiblackBasedBinarizer.getSauvolaFast(0.2);
-		NiblackBasedBinarizer naive=new NiblackBasedBinarizer(formula,new NaiveBinarizer(),window);
-		NiblackBasedBinarizer integral=new NiblackBasedBinarizer(formula,new IntegralImageBinarizer(),window);
-		NiblackBasedBinarizer effient=new NiblackBasedBinarizer(formula,new EfficientBinarizer(),window);
-		testSpeed(directory,fixed,otsu,naive,integral,effient);
+		for(int window:getSequence(1,2,16)){
+			NiblackBasedBinarizer.ThresholdFormula formula=NiblackBasedBinarizer.getSauvolaFast(0.5);
+			NiblackBasedBinarizer naive=new NiblackBasedBinarizer(formula,new NaiveAlgorithm(),window);
+			NiblackBasedBinarizer integral=new NiblackBasedBinarizer(formula,new IntegralImageAlgorithm(),window);
+			NiblackBasedBinarizer effient=new NiblackBasedBinarizer(formula,new EfficientAlgorithm(),window);
+			testSpeed(directory,fixed,otsu,naive,integral,effient);
+		}
 	}
 	public static Binarizer[] getStandardBinarizers(){
 		FixedBinarizer fixed=new FixedBinarizer(128);
 		OtsuBinarizer otsu=new OtsuBinarizer();
-		int window=32;
-		NiblackBasedBinarizer.ThresholdFormula formula=NiblackBasedBinarizer.getSauvolaFast(0.5);
-		NiblackBasedBinarizer effient=new NiblackBasedBinarizer(formula,new EfficientBinarizer(),window);
-		return new Binarizer[]{fixed,otsu,effient};
+		int window=25;
+		double k=0.4;
+		NiblackBasedBinarizer.ThresholdFormula formula=NiblackBasedBinarizer.getSauvolaFast(k);
+		NiblackBasedBinarizer effient=new NiblackBasedBinarizer(formula,new EfficientAlgorithm(),window);
+		ChanBinarizer chan=new ChanBinarizer(k,window);
+		return new Binarizer[]{fixed,otsu,effient,chan};
 	}
 	public static void searchForParameter(File directory,File groundtruths,int[] sizes,double[] weights){
 		System.out.println("Searching: "+directory);
-		EfficientBinarizer efficientBinarizer=new EfficientBinarizer();
+		EfficientAlgorithm efficientBinarizer=new EfficientAlgorithm();
 		int count=0;
 		double[][][] measure=new double[sizes.length][weights.length][2];
 		for(File file:directory.listFiles()){
@@ -182,7 +185,7 @@ public class BinarizerTest{
 				int bestPsnrWindow=-1;
 				for(int j=0;j<weights.length;j++){
 					for(int i=0;i<sizes.length;i++){
-						BufferedImage result=new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvolaFast(weights[j],getR(input)),efficientBinarizer,sizes[i]).binarize(input);
+						BufferedImage result=new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvolaFast(weights[j]),efficientBinarizer,sizes[i]).binarize(input);
 						double f=getF(result,groundtruth);
 						double psnr=getPsnr(result,groundtruth);
 						measure[i][j][0]+=f;
@@ -233,19 +236,17 @@ public class BinarizerTest{
 		System.out.println("PSNR best: "+bestPsnr+" at "+bestPsnrWindow+","+bestPsnrWeight);
 	}
 	public static void main(String[] args){
-//		testNiblackImplementationsEquality(new File("../datasets/binarization/DIBC02009_Test_images-handwritten"),NiblackBasedBinarizer.getSauvola(0.2),32);
-//		testNiblackImplementationsSpeed(new File("../datasets/binarization/DIBC02009_Test_images-handwritten"),NiblackBasedBinarizer.getSauvola(0.2),32);
-//		testFormulaEquality(new File("../datasets/binarization/2009/DIBC02009_Test_images-handwritten"),32,NiblackBasedBinarizer.getSauvola(0.2),NiblackBasedBinarizer.getSauvolaFast(0.2));
-//		testFormulaEquality(new File("../datasets/binarization/2009/DIBCO2009_Test_images-printed"),32,NiblackBasedBinarizer.getSauvola(0.2),NiblackBasedBinarizer.getSauvolaFast(0.2));
-//		testNiblackImplementationsEquality(new File("../datasets/binarization/2009/DIBC02009_Test_images-handwritten"),NiblackBasedBinarizer.getSauvolaFast(0.2),32);
-//		testNiblackImplementationsEquality(new File("../datasets/binarization/2009/DIBCO2009_Test_images-printed"),NiblackBasedBinarizer.getSauvolaFast(0.2),32);
-//		testSpeed(new File("../datasets/binarization/2009/DIBC02009_Test_images-handwritten"));
-//		testSpeed(new File("../datasets/binarization/2009/DIBCO2009_Test_images-printed"));
-//		testQuality(new File("../datasets/binarization/2009/test"),new File("../datasets/binarization/2009/gt"),getStandardBinarizers());
+//		testFormulaEquality(new File("../datasets/binarization/all/test"),32,NiblackBasedBinarizer.getSauvola(0.5),NiblackBasedBinarizer.getSauvolaFast(0.5));
+//		for(int size:getSequence(1,50,10)){
+//			System.out.println(size);
+//			testNiblackImplementationsEquality(new File("../datasets/binarization/all/test"),NiblackBasedBinarizer.getSauvolaFast(0.5),size);
+//		}
+		testSpeed(new File("../datasets/binarization/all/test"));
+//		testQuality(new File("../datasets/binarization/2018/test"),new File("../datasets/binarization/2018/gt"),getStandardBinarizers());
 //		testQuality(new File("../datasets/binarization/2010/test"),new File("../datasets/binarization/2010/gt"),getStandardBinarizers());
 //		testQuality(new File("../datasets/binarization/2011/test"),new File("../datasets/binarization/2011/gt"),getStandardBinarizers());
 //		searchForParameter(new File("../datasets/binarization/2018/test"),new File("../datasets/binarization/2018/gt"),getSequence(3,2,30),getSequence(0.0,0.02,40));
-		searchForParameter(new File("../datasets/binarization/all/test"),new File("../datasets/binarization/all/gt"),getSequence(3,2,30),getSequence(0.0,0.02,40));
+//		searchForParameter(new File("../datasets/binarization/all/test"),new File("../datasets/binarization/all/gt"),getSequence(3,2,20),getSequence(0.15,0.01,40));
 //		searchForParameter(new File("../datasets/binarization/2011/test"),new File("../datasets/binarization/2011/gt"),getSequence(3,2,30),getSequence(0.0,0.02,40));
 //		searchForParameter(new File("../datasets/binarization/2010/test"),new File("../datasets/binarization/2010/gt"),new int[]{5,11,17,23,29,35},new double[]{0.0,0.1,0.2,0.3,0.4,0.5,0.6});
 //		searchForParameter(new File("../datasets/binarization/2011/test"),new File("../datasets/binarization/2011/gt"),new int[]{5,11,17,23,29,35},new double[]{0.0,0.1,0.2,0.3,0.4,0.5,0.6});
@@ -256,19 +257,5 @@ public class BinarizerTest{
 	}
 	private static double[] getSequence(double start,double step,int steps){
 		return IntStream.range(0,steps).mapToDouble((k)->k*step+start).toArray();
-	}
-	private static double getR(BufferedImage input){
-		byte[] data=getData(input);
-		int min=255, max=0;
-		for(byte b:data){
-			int bb=Byte.toUnsignedInt(b);
-			if(bb>max){
-				max=bb;
-			}
-			if(bb<min){
-				min=bb;
-			}
-		}
-		return (max-min)*0.5;
 	}
 }

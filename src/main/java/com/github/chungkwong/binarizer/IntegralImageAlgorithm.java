@@ -19,7 +19,7 @@ package com.github.chungkwong.binarizer;
  *
  * @author Chan Chung Kwong
  */
-public class IntegralImageBinarizer implements NiblackBasedBinarizer.ThresholdAlgorithm{
+public class IntegralImageAlgorithm implements NiblackBasedBinarizer.ThresholdAlgorithm{
 	@Override
 	public void binarize(byte[] from,byte[] to,int width,int height,int windowWidth,int windowHeight,NiblackBasedBinarizer.ThresholdFormula formula){
 		long[][] intImg=getIntegralImage(from,width,height);
