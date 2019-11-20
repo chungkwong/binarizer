@@ -20,6 +20,14 @@ package com.github.chungkwong.binarizer;
  * @author Chan Chung Kwong
  */
 public class EfficientAlgorithm implements NiblackBasedBinarizer.ThresholdAlgorithm{
+	@Override
+	public void binarize(byte[] from,byte[] to,int width,int height,int windowWidth,int windowHeight,NiblackBasedBinarizer.ThresholdFormula formula){
+		//if(height>=width){
+		binarizeTall(from,to,width,height,windowWidth,windowHeight,formula);
+		//}else{
+		//	binarizeFat(from,to,width,height,windowWidth,windowHeight,formula);
+		//}
+	}
 	public void binarizeTall(byte[] from,byte[] to,int width,int height,int windowWidth,int windowHeight,NiblackBasedBinarizer.ThresholdFormula formula){
 		int[] integral=new int[width];
 		int[] integralSquare=new int[width];
@@ -162,14 +170,6 @@ public class EfficientAlgorithm implements NiblackBasedBinarizer.ThresholdAlgori
 				squareSum-=integralSquare[winTop];
 				to[index]=formula.isForeground(from[index]&0xFF,sum,squareSum,count)?(byte)0x00:(byte)0xff;
 			}
-		}
-	}
-	@Override
-	public void binarize(byte[] from,byte[] to,int width,int height,int windowWidth,int windowHeight,NiblackBasedBinarizer.ThresholdFormula formula){
-		if(height>=width){
-			binarizeTall(from,to,width,height,windowWidth,windowHeight,formula);
-		}else{
-			binarizeFat(from,to,width,height,windowWidth,windowHeight,formula);
 		}
 	}
 	@Override

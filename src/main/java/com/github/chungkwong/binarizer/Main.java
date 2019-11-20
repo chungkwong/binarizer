@@ -117,7 +117,7 @@ public class Main extends JFrame{
 					return new FixedBinarizer(Integer.parseInt(fixedThreshold.getText()));
 				}else if(sauvola.isSelected()){
 					return new NiblackBasedBinarizer(
-							NiblackBasedBinarizer.getSauvolaFast(Double.parseDouble(sauvolaWeight.getText())),
+							NiblackBasedBinarizer.getSauvola(Double.parseDouble(sauvolaWeight.getText())),
 							new EfficientAlgorithm(),
 							Integer.parseInt(sauvolaWindow.getText()));
 				}else if(niblack.isSelected()){

@@ -23,6 +23,9 @@ public class OtsuBinarizer extends GlobalBinarizer{
 	@Override
 	protected int getThreshold(byte[] pixels,int width,int height){
 		int[] histogram=getHistogram(pixels);
+		return getThreshold(histogram,pixels.length);
+	}
+	private int getThreshold(int[] histogram,int total){
 		double except=0, uT=0, bestVar=0;
 		int acc=0, bestValue=0;
 		for(int i=0;i<256;i++){
@@ -34,12 +37,12 @@ public class OtsuBinarizer extends GlobalBinarizer{
 			if(acc==0){
 				continue;
 			}
-			if(pixels.length==acc){
+			if(total==acc){
 				break;
 			}
 			double u0=except/acc;
-			double u1=(uT-except)/(pixels.length-acc);
-			double var=(u0-u1)*(u0-u1)*acc*(pixels.length-acc);
+			double u1=(uT-except)/(total-acc);
+			double var=(u0-u1)*(u0-u1)*acc*(total-acc);
 			if(var>bestVar){
 				bestVar=var;
 				bestValue=t;

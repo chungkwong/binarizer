@@ -32,17 +32,17 @@ public class NiblackBasedBinarizer extends GrayscaleBinarizer{
 		this.windowWidth=windowWidth;
 		this.algorithm=algorithm;
 	}
-	public static ThresholdFormula getSauvola(double k){
+	public static ThresholdFormula getSauvolaLegacy(double k){
 		return (pixel,sum,squareSum,count)->{
 			double mean=((double)sum)/count;
 			double variance=((double)squareSum)/count-mean*mean;
 			return pixel<=mean*(1+k*(Math.sqrt(variance)/128-1));
 		};
 	}
-	public static ThresholdFormula getSauvolaFast(double k){
-		return getSauvolaFast(k,128);
+	public static ThresholdFormula getSauvola(double k){
+		return getSauvola(k,128);
 	}
-	public static ThresholdFormula getSauvolaFast(double k,double R){
+	public static ThresholdFormula getSauvola(double k,double R){
 		double k2=k*k/R/R;
 		if(k>=0){
 			return (pixel,sum,squareSum,count)->{
@@ -61,6 +61,24 @@ public class NiblackBasedBinarizer extends GrayscaleBinarizer{
 		}
 	}
 	public static ThresholdFormula getNiblack(double k){
+		double k2=k*k;
+		if(k>=0){
+			return (pixel,sum,squareSum,count)->{
+				double mean=((double)sum)/count;
+				double variance=((double)squareSum)/count-mean*mean;
+				double tmp=pixel-mean;
+				return tmp<=0||tmp*tmp<=k2*variance;
+			};
+		}else{
+			return (pixel,sum,squareSum,count)->{
+				double mean=((double)sum)/count;
+				double variance=((double)squareSum)/count-mean*mean;
+				double tmp=pixel-mean;
+				return tmp<=0&&tmp*tmp>=k2*variance;
+			};
+		}
+	}
+	public static ThresholdFormula getNiblackLegacy(double k){
 		return (pixel,sum,squareSum,count)->{
 			double mean=((double)sum)/count;
 			double variance=((double)squareSum)/count-mean*mean;
