@@ -89,6 +89,12 @@ public abstract class AbstractBinarizer<T> extends GrayscaleBinarizer{
 			}
 		}
 	}
+	public int getWindowWidth(){
+		return windowWidth;
+	}
+	public int getWindowHeight(){
+		return windowHeight;
+	}
 	protected abstract T create();
 	protected abstract void add(T tmp,int pixel);
 	protected abstract void remove(T tmp,int pixel);

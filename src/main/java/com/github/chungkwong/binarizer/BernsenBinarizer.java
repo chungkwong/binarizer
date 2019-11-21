@@ -15,23 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.binarizer;
-import java.util.*;
 /**
  *
  * @author Chan Chung Kwong
  */
 public class BernsenBinarizer extends AbstractBinarizer<Pair>{
-	private final int minContrast;
+	private final int minContrast, capacity;
 	private final double weight, weight1;
 	public BernsenBinarizer(int windowWidth,int windowHeight,double weight,int minContrast){
 		super(windowWidth,windowHeight);
+		this.capacity=Math.max(windowWidth,windowHeight)+1;
 		this.weight=weight;
 		this.weight1=1.0-weight;
 		this.minContrast=minContrast;
 	}
 	@Override
 	protected final Pair create(){
-		return new Pair();
+		return new Pair(capacity);
 	}
 	@Override
 	protected final void add(Pair tmp,int pixel){
@@ -59,14 +59,24 @@ public class BernsenBinarizer extends AbstractBinarizer<Pair>{
 		int min=tmp.getMin();
 		return max-min>=minContrast&&pixel<=weight*max+weight1*min;
 	}
+	public double getWeight(){
+		return weight;
+	}
+	public int getMinimumContrast(){
+		return minContrast;
+	}
 	@Override
 	public String toString(){
-		return "Efficient Bernsen";
+		return "Bernsen("+getWindowWidth()+"x"+getWindowHeight()+","+weight+","+minContrast+")";
 	}
 }
 class Pair{
-	private final LinkedList<Integer> maxQueue=new LinkedList<>();
-	private final LinkedList<Integer> minQueue=new LinkedList<>();
+	private final CyclicQueue maxQueue;
+	private final CyclicQueue minQueue;
+	public Pair(int capacity){
+		this.minQueue=new CyclicQueue(capacity);
+		this.maxQueue=new CyclicQueue(capacity);
+	}
 	public final void addMax(int pixel){
 		while(!maxQueue.isEmpty()&&maxQueue.getLast()<pixel){
 			maxQueue.removeLast();
@@ -94,5 +104,47 @@ class Pair{
 	}
 	public final int getMin(){
 		return minQueue.getFirst();
+	}
+	private static final class CyclicQueue{
+		private final int[] queue;
+		private final int capacity;
+		private int indexStart=0, indexEnd;
+		public CyclicQueue(int capacity){
+			this.indexEnd=0;
+			this.queue=new int[capacity+1];
+			this.capacity=capacity;
+			this.indexEnd=capacity;
+		}
+		public boolean isEmpty(){
+			return indexEnd==indexStart-1||(indexStart==0&&indexEnd==capacity);
+		}
+		public int getFirst(){
+			return queue[indexStart];
+		}
+		public void removeFirst(){
+			if(indexStart==capacity){
+				indexStart=0;
+			}else{
+				++indexStart;
+			}
+		}
+		public int getLast(){
+			return queue[indexEnd];
+		}
+		public void addLast(int pixel){
+			if(indexEnd==capacity){
+				indexEnd=0;
+			}else{
+				++indexEnd;
+			}
+			queue[indexEnd]=pixel;
+		}
+		public void removeLast(){
+			if(indexEnd==0){
+				indexEnd=capacity;
+			}else{
+				--indexEnd;
+			}
+		}
 	}
 }

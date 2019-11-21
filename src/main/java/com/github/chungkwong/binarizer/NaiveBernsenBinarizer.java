@@ -22,11 +22,13 @@ package com.github.chungkwong.binarizer;
 public class NaiveBernsenBinarizer extends GrayscaleBinarizer{
 	private final int windowWidth, windowHeight;
 	private final double weight, weight1;
-	public NaiveBernsenBinarizer(int windowWidth,int windowHeight,double weight){
+	private final int minContrast;
+	public NaiveBernsenBinarizer(int windowWidth,int windowHeight,double weight,int minContrast){
 		this.windowWidth=windowWidth;
 		this.windowHeight=windowHeight;
 		this.weight=weight;
 		this.weight1=1.0-weight;
+		this.minContrast=minContrast;
 	}
 	@Override
 	protected void binarize(byte[] from,byte[] to,int width,int height){
@@ -53,12 +55,24 @@ public class NaiveBernsenBinarizer extends GrayscaleBinarizer{
 						}
 					}
 				}
-				to[index]=(from[index]&0xFF)<=weight*max+weight1*min?0x00:(byte)0xFF;
+				to[index]=max-min>=minContrast&&(from[index]&0xFF)<=weight*max+weight1*min?0x00:(byte)0xFF;
 			}
 		}
 	}
+	public double getWeight(){
+		return weight;
+	}
+	public int getMinimumContrast(){
+		return minContrast;
+	}
+	public int getWindowWidth(){
+		return windowWidth;
+	}
+	public int getWindowHeight(){
+		return windowHeight;
+	}
 	@Override
 	public String toString(){
-		return "Naive Bernsen";
+		return "Naive Bernsen("+getWindowWidth()+"x"+getWindowHeight()+","+weight+","+minContrast+")";
 	}
 }
