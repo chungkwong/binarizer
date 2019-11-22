@@ -82,8 +82,10 @@ public class CorrectnessTest{
 	}
 	public static void main(String[] args){
 //		testNiblackImplementationsEquality(new File("../datasets/binarization/all/test"));
-//		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getNiblack(0.2),NiblackBasedBinarizer.getNiblackLegacy(0.2));
-//		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(0.2),NiblackBasedBinarizer.getSauvolaLegacy(0.2));
+		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getNiblack(0.2),NiblackBasedBinarizer.getNiblackLegacy(0.2));
+		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getNiblack(-0.5),NiblackBasedBinarizer.getNiblackLegacy(-0.5));
+		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(0.2),NiblackBasedBinarizer.getSauvolaLegacy(0.2));
+		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(-0.2),NiblackBasedBinarizer.getSauvolaLegacy(-0.2));
 //		testBernsenImplementationsEquality(new File("../datasets/binarization/all/test"));
 	}
 }

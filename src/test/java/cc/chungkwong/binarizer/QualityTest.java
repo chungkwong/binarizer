@@ -34,14 +34,18 @@ public class QualityTest{
 		int count=0;
 		double[][] measure=new double[binarizers.length][2];
 		for(File file:directory.listFiles()){
+			System.out.println(file);
 			try{
 				BufferedImage input=GrayscaleBinarizer.toGrayscale(ImageIO.read(file));
 				File gtFile=new File(groundtruths,file.getName().substring(0,file.getName().lastIndexOf('.'))+".tiff");
 				BufferedImage groundtruth=GrayscaleBinarizer.toGrayscale(ImageIO.read(gtFile));
 				for(int i=0;i<binarizers.length;i++){
 					BufferedImage result=binarizers[i].binarize(input);
-					measure[i][0]+=getF(result,groundtruth);
-					measure[i][1]+=getPsnr(result,groundtruth);
+					double f=getF(result,groundtruth);
+					double psnr=getPsnr(result,groundtruth);
+					measure[i][0]+=f;
+					measure[i][1]+=psnr;
+					System.out.println(binarizers[i]+"\t"+f+"\t"+psnr);
 				}
 				++count;
 			}catch(IOException ex){
@@ -57,7 +61,8 @@ public class QualityTest{
 		byte[] r=((DataBufferByte)result.getRaster().getDataBuffer()).getData();
 		byte[] g=((DataBufferByte)groundtruth.getRaster().getDataBuffer()).getData();
 		int tp=0, fp=0, tn=0, fn=0;
-		for(int i=0;i<g.length;i++){
+		int len=groundtruth.getHeight()*groundtruth.getWidth();
+		for(int i=0;i<len;i++){
 			if(g[i]==0){
 				if(r[i]==0){
 					++tp;
@@ -80,14 +85,29 @@ public class QualityTest{
 		return 2*recall*precision/(recall+precision);
 	}
 	public static double getPsnr(BufferedImage result,BufferedImage groundtruth){
-		byte[] r=getData(result);
-		byte[] g=getData(groundtruth);
-		long se=0;
-		for(int i=0;i<r.length;i++){
-			int d=Byte.toUnsignedInt(g[i])-Byte.toUnsignedInt(r[i]);
-			se+=d*d;
+		byte[] r=((DataBufferByte)result.getRaster().getDataBuffer()).getData();
+		byte[] g=((DataBufferByte)groundtruth.getRaster().getDataBuffer()).getData();
+		int tp=0, fp=0, tn=0, fn=0;
+		int len=groundtruth.getHeight()*groundtruth.getWidth();
+		for(int i=0;i<len;i++){
+			if(g[i]==0){
+				if(r[i]==0){
+					++tp;
+				}else{
+					++fn;
+				}
+			}else{
+//				if(g[i]!=(byte)255){
+//					System.err.println("bad");
+//				}
+				if(r[i]==0){
+					++fp;
+				}else{
+					++tn;
+				}
+			}
 		}
-		return 10*Math.log10(255*255*1.0*r.length/se);
+		return 10*Math.log10(r.length*1.0/(fp+fn));
 	}
 	private static byte[] getData(BufferedImage image){
 		return ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
@@ -187,31 +207,83 @@ public class QualityTest{
 		}
 	}
 	public static void main(String[] args){
-//		EfficientAlgorithm algorithm=new EfficientAlgorithm();
-//		gridRecord(new File("../datasets/binarization/all/test"),
-//				new File("../datasets/binarization/all/gt"),
-//				new File("../datasets/binarization/sauvola"),
-//				(p)->new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvola(p[0]),algorithm,(int)(p[1]+0.5)),
-//				zip(BinarizerTest.getSequence(0.0,0.02,40),BinarizerTest.getSequence(3.0,2.0,30))
-//		);
-//		gridSearch(new File("../datasets/binarization/sauvola"),"2018_.*",(f,psnr)->f*100+psnr*4,50);
-//		gridTune(new File("../datasets/binarization/sauvola"),"2016_.*","2018_.*",(f,psnr)->f*100+psnr*4,50);
-//		gridTune(new File("../datasets/binarization/sauvola"),"(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
-////		gridTune(new File("../datasets/binarization/sauvola"),"(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10|2018_).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
-//		gridTune(new File("../datasets/binarization/sauvola"),"(2009_P|2011_PR|2013_PR|2017_1[1-9]|2017_20).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
-//		gridTune(new File("../datasets/binarization/sauvola"),"...[^8].*","2018_.*",(f,psnr)->f*100+psnr*4,100);
+//		tune("2018_.*","2018_.*");
+//		tune("2016_.*","2018_.*");
+//		tune("(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10).*","2018_.*");
+////		gridTune(new File("../datasets/binarization/fixed"),"(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10|2018_).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
+//		tune("(2009_P|2011_PR|2013_PR|2017_1[1-9]|2017_20).*","2018_.*");
+//		tune("...[^8].*","2018_.*");
+//		tune("(2017_[0-9]\\.|2017_10).*","(2017_[0-9]\\.|2017_10).*");
+//		tune("(2017_1[1-9]|2017_20).*","(2017_1[1-9]|2017_20).*");
+//		tune("(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_).*","(2017_[0-9]\\.|2017_10).*");
+//		tune("(2009_P|2011_PR|2013_PR).*","(2017_1[1-9]|2017_20).*");
+//		tune("2016_.*","2016_.*");
+//		tune("(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H).*","2016_.*");
+//		tune("2014_.*","2014_.*");
+//		tune("(2009_H|2010_H|2011_HW|2012_H|2013_HW).*","2014_.*");
+//		tune("2013_.*","2013_.*");
+//		tune("(2009|201[012])_.*","2013_.*");
+//		tune("2012_.*","2012_.*");
+//		tune("(2009|201[01])_.*","2012_.*");
+//		tune("2011_.*","2011_.*");
+//		tune("(2009|2010)_.*","2011_.*");
+//		tune("2010_.*","2010_.*");
+//		tune("2009_.*","2010_.*");
+//		tune("2009_.*","2009_.*");
+		tune(".*",".*");
+//		testQuality(new File("../datasets/binarization/all/test"),new File("../datasets/binarization/all/gt"),
+//				new FixedBinarizer(75),
+//				new OtsuBinarizer(),
+//				new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvola(0.32),new EfficientAlgorithm(),21),
+//				new BernsenBinarizer(11,11,0.5,80));
+	}
+	private static void buildIndex(){
+		EfficientAlgorithm algorithm=new EfficientAlgorithm();
+		gridRecord(new File("../datasets/binarization/all/test"),
+				new File("../datasets/binarization/all/gt"),
+				new File("../datasets/binarization/fixed"),
+				(p)->new FixedBinarizer((int)(p[0]+0.5)),
+				zip(BinarizerTest.getSequence(1.0,1.0,255))
+		);
+		gridRecord(new File("../datasets/binarization/all/test"),
+				new File("../datasets/binarization/all/gt"),
+				new File("../datasets/binarization/niblack"),
+				(p)->new NiblackBasedBinarizer(NiblackBasedBinarizer.getNiblack(p[0]),algorithm,(int)(p[1]+0.5)),
+				zip(BinarizerTest.getSequence(-2.0,0.1,21),BinarizerTest.getSequence(3.0,2.0,20))
+		);
+		gridRecord(new File("../datasets/binarization/all/test"),
+				new File("../datasets/binarization/all/gt"),
+				new File("../datasets/binarization/sauvola"),
+				(p)->new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvola(p[0]),algorithm,(int)(p[1]+0.5)),
+				zip(BinarizerTest.getSequence(0.0,0.02,40),BinarizerTest.getSequence(3.0,2.0,30))
+		);
 		gridRecord(new File("../datasets/binarization/all/test"),
 				new File("../datasets/binarization/all/gt"),
 				new File("../datasets/binarization/bernsen"),
 				(p)->new BernsenBinarizer((int)(p[0]+0.5),(int)(p[0]+0.5),p[1],(int)(p[2]+0.5)),
 				zip(BinarizerTest.getSequence(3.0,2.0,15),BinarizerTest.getSequence(0.4,0.05,5),BinarizerTest.getSequence(8.0,8,31))
 		);
-		gridSearch(new File("../datasets/binarization/bernsen"),"2018_.*",(f,psnr)->f*100+psnr*4,50);
-		gridTune(new File("../datasets/binarization/bernsen"),"2016_.*","2018_.*",(f,psnr)->f*100+psnr*4,50);
-		gridTune(new File("../datasets/binarization/bernsen"),"(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
-//		gridTune(new File("../datasets/binarization/bernsen"),"(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10|2018_).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
-		gridTune(new File("../datasets/binarization/bernsen"),"(2009_P|2011_PR|2013_PR|2017_1[1-9]|2017_20).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
-		gridTune(new File("../datasets/binarization/bernsen"),"...[^8].*","2018_.*",(f,psnr)->f*100+psnr*4,100);
+		gridRecord(new File("../datasets/binarization/all/test"),
+				new File("../datasets/binarization/all/gt"),
+				new File("../datasets/binarization/bernsen2"),
+				(p)->new BernsenBinarizer((int)(p[0]+0.5),(int)(p[0]+0.5),p[1],(int)(p[2]+0.5)),
+				zip(BinarizerTest.getSequence(3.0,2.0,15),BinarizerTest.getSequence(0.5,0.1,1),BinarizerTest.getSequence(16.0,16,8))
+		);
+	}
+	private static File[] getIndexes(){
+		return new File[]{
+			new File("../datasets/binarization/fixed"),
+			new File("../datasets/binarization/niblack"),
+			new File("../datasets/binarization/sauvola"),
+			new File("../datasets/binarization/bernsen"),
+			new File("../datasets/binarization/bernsen2"),};
+	}
+	private static void tune(String train,String test){
+		System.out.println(train+"\t"+test);
+		for(File index:getIndexes()){
+			System.out.println(index);
+			gridTune(index,train,test,(f,psnr)->f*100+psnr*4,5);
+		}
 	}
 	private static double[][] zip(double[]... sequences){
 		int length=1;

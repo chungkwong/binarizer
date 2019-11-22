@@ -30,15 +30,16 @@ public class SpeedTest{
 	public static void testSpeed(File directory){
 		FixedBinarizer fixed=new FixedBinarizer(128);
 		OtsuBinarizer otsu=new OtsuBinarizer();
-		for(int window:BinarizerTest.getSequence(1,2,16)){
+//		for(int window:BinarizerTest.getSequence(1,2,16)){
+		for(int window:BinarizerTest.getSequence(1,2,11)){
 			NiblackBasedBinarizer.ThresholdFormula formula=NiblackBasedBinarizer.getSauvola(0.4);
 			NiblackBasedBinarizer.ThresholdFormula formulaLagacy=NiblackBasedBinarizer.getSauvolaLegacy(0.4);
 			List<Binarizer> binarizers=new ArrayList<>();
-//			binarizers.add(new NiblackBasedBinarizer(formulaLagacy,new NaiveAlgorithm(),window));
-//			binarizers.add(new NiblackBasedBinarizer(formulaLagacy,new IntegralImageAlgorithm(),window));
-//			binarizers.add(new NiblackBasedBinarizer(formula,new IntegralImageAlgorithm(),window));
-//			binarizers.add(new NiblackBasedBinarizer(formulaLagacy,new EfficientAlgorithm(),window));
-//			binarizers.add(new NiblackBasedBinarizer(formula,new EfficientAlgorithm(),window));
+			binarizers.add(new NiblackBasedBinarizer(formulaLagacy,new NaiveAlgorithm(),window));
+			binarizers.add(new NiblackBasedBinarizer(formulaLagacy,new IntegralImageAlgorithm(),window));
+			binarizers.add(new NiblackBasedBinarizer(formula,new IntegralImageAlgorithm(),window));
+			binarizers.add(new NiblackBasedBinarizer(formulaLagacy,new EfficientAlgorithm(),window));
+			binarizers.add(new NiblackBasedBinarizer(formula,new EfficientAlgorithm(),window));
 			binarizers.add(new NaiveBernsenBinarizer(window,window,0.5,80));
 			binarizers.add(new BernsenBinarizer(window,window,0.5,80));
 			testSpeed(directory,binarizers.toArray(Binarizer[]::new));

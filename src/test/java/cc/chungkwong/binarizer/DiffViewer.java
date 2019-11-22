@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.binarizer;
+package cc.chungkwong.binarizer;
+import com.github.chungkwong.binarizer.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
+import java.nio.file.*;
 import java.util.logging.*;
 import javax.imageio.*;
 import javax.swing.*;
@@ -25,9 +27,11 @@ import javax.swing.*;
  *
  * @author Chan Chung Kwong
  */
-public class Main extends JFrame{
+public class DiffViewer extends JFrame{
 	private final JTabbedPane tabs=new JTabbedPane();
-	public Main() throws HeadlessException{
+	private final File inputDir=new File("../datasets/binarization/all/test");
+	private final File groundTruthDir=new File("../datasets/binarization/all/gt");
+	public DiffViewer() throws HeadlessException{
 		setTitle("Binarize");
 		setJMenuBar(createMenuBar());
 		getContentPane().add(tabs);
@@ -153,21 +157,26 @@ public class Main extends JFrame{
 		}
 		MethodChooser methodChooser=new MethodChooser();
 		input.add(new JScrollPane(methodChooser),BorderLayout.SOUTH);
-		JFileChooser fileChooser=new JFileChooser();
-		fileChooser.addActionListener((e)->{
-			File selected=fileChooser.getSelectedFile();
-			try{
-				BufferedImage image=methodChooser.getBinarizer().binarize(ImageIO.read(selected));
-				viewer.setIcon(new ImageIcon(image));
-			}catch(IOException ex){
-				Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
-			}
-		});
-		input.add(new JScrollPane(fileChooser),BorderLayout.CENTER);
-		JSplitPane pane=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,input,output);
+		try{
+			JComboBox<File> fileChooser=new JComboBox(Files.list(inputDir.toPath()).map((p)->p.toFile()).sorted().toArray());
+			fileChooser.addActionListener((e)->{
+				refresh((File)fileChooser.getSelectedItem(),methodChooser.getBinarizer(),viewer);
+			});
+			JButton apply=new JButton("Refresh");
+			apply.addActionListener((e)->{
+				refresh((File)fileChooser.getSelectedItem(),methodChooser.getBinarizer(),viewer);
+			});
+			Box bar=Box.createHorizontalBox();
+			bar.add(fileChooser);
+			bar.add(apply);
+			input.add(bar,BorderLayout.CENTER);
+		}catch(IOException ex){
+			Logger.getLogger(DiffViewer.class.getName()).log(Level.SEVERE,null,ex);
+		}
+		JSplitPane pane=new JSplitPane(JSplitPane.VERTICAL_SPLIT,input,output);
 		pane.setOneTouchExpandable(true);
 		addTab("Binarize",pane);
-		pane.setResizeWeight(0.5);
+		pane.setResizeWeight(0.3);
 	}
 	private void addTab(String title,JComponent component){
 		int index=tabs.getTabCount();
@@ -181,7 +190,31 @@ public class Main extends JFrame{
 		tabs.setTabComponentAt(index,header);
 		tabs.setSelectedIndex(index);
 	}
+	private void refresh(File inputFile,Binarizer binarizer,JLabel viewer){
+		try{
+			BufferedImage image=binarizer.binarize(ImageIO.read(inputFile));
+			File gtFile=new File(groundTruthDir,inputFile.getName().substring(0,inputFile.getName().lastIndexOf('.'))+".tiff");
+			BufferedImage groundtruth=GrayscaleBinarizer.toGrayscale(ImageIO.read(gtFile));
+			int len=groundtruth.getWidth()*groundtruth.getHeight();
+			byte[] in=((DataBufferByte)image.getRaster().getDataBuffer()).getData();
+			byte[] gt=((DataBufferByte)groundtruth.getRaster().getDataBuffer()).getData();
+			for(int i=0;i<len;i++){
+				if(in[i]==0){
+					if(gt[i]!=0){
+						in[i]=85;
+					}
+				}else{
+					if(gt[i]==0){
+						in[i]=(byte)170;
+					}
+				}
+			}
+			viewer.setIcon(new ImageIcon(image));
+		}catch(IOException ex){
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
+		}
+	}
 	public static void main(String[] args){
-		new Main();
+		new DiffViewer();
 	}
 }
