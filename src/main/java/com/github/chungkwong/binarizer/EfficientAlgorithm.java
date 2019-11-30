@@ -45,16 +45,17 @@ public class EfficientAlgorithm implements NiblackBasedBinarizer.ThresholdAlgori
 		int dr2=width-l;
 		int dr3=Math.min(dr2,0);
 		int indexTop=0, indexBottom=u*width;
-		for(int i=0, index=0;i<height;i++){
-			int winTop=i-o, winBottom=i+u;
+		for(int winTop=-o, winBottom=u, index=0, bottomMax=height+u;winBottom<bottomMax;winTop++,winBottom++){
+			int top, bottom;
 			if(winTop>=0){
 				for(int j=0;j<width;j++,indexTop++){
 					int pixel=from[indexTop]&0xFF;
 					integral[j]-=pixel;
 					integralSquare[j]-=pixel*pixel;
 				}
+				top=winTop;
 			}else{
-				winTop=-1;
+				top=-1;
 			}
 			if(winBottom<height){
 				for(int j=0;j<width;j++,indexBottom++){
@@ -62,10 +63,11 @@ public class EfficientAlgorithm implements NiblackBasedBinarizer.ThresholdAlgori
 					integral[j]+=pixel;
 					integralSquare[j]+=pixel*pixel;
 				}
+				bottom=winBottom;
 			}else{
-				winBottom=height-1;
+				bottom=height-1;
 			}
-			int winHeight=winBottom-winTop;
+			int winHeight=bottom-top;
 			int sum=0;
 			long squareSum=0;
 			for(int j=0;j<dr1;j++){

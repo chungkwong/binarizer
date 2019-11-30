@@ -30,23 +30,45 @@ public abstract class GrayscaleBinarizer implements Binarizer{
 		config.put(RenderingHints.KEY_COLOR_RENDERING,RenderingHints.VALUE_COLOR_RENDER_SPEED);
 		TO_GRAYSCALE=new ColorConvertOp(new RenderingHints(config));
 	}
+	private final boolean linear;
+	public GrayscaleBinarizer(){
+		this(true);
+	}
+	public GrayscaleBinarizer(boolean linear){
+		this.linear=linear;
+	}
 	@Override
 	public BufferedImage binarize(BufferedImage input){
 		int width=input.getWidth();
 		int height=input.getHeight();
-		byte[] from=((DataBufferByte)toGrayscale(input).getRaster().getDataBuffer()).getData();
+		byte[] from=((DataBufferByte)toGrayscale(input,linear).getRaster().getDataBuffer()).getData();
 		BufferedImage output=new BufferedImage(width,height,BufferedImage.TYPE_BYTE_GRAY);
 		byte[] to=((DataBufferByte)output.getRaster().getDataBuffer()).getData();
 		binarize(from,to,width,height);
 		return output;
 	}
 	public static BufferedImage toGrayscale(BufferedImage input){
+		return toGrayscale(input,true);
+	}
+	public static BufferedImage toGrayscale(BufferedImage input,boolean linear){
 		BufferedImage gray;
 		if(input.getType()==BufferedImage.TYPE_BYTE_GRAY){
 			gray=input;
 		}else{
 			gray=new BufferedImage(input.getWidth(),input.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
-			TO_GRAYSCALE.filter(input,gray);
+			if(linear){
+				TO_GRAYSCALE.filter(input,gray);
+			}else{
+				byte[] to=((DataBufferByte)gray.getRaster().getDataBuffer()).getData();
+				int wR=316, wG=624, wB=84, divisor=wR+wG+wB;
+				for(int i=0, ind=0;i<input.getHeight();i++){
+					for(int j=0;j<input.getWidth();j++,ind++){
+						int rgb=input.getRGB(j,i);
+						int alpha=(rgb>>>24)&0xff, red=(rgb>>>16)&0xff, green=(rgb>>>8)&0xff, blue=rgb&0xff;
+						to[ind]=(byte)(255-(255-(red*wR+green*wG+blue*wB)/divisor)*alpha/255);
+					}
+				}
+			}
 		}
 		return gray;
 	}

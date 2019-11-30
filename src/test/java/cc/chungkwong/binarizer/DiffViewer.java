@@ -198,18 +198,32 @@ public class DiffViewer extends JFrame{
 			int len=groundtruth.getWidth()*groundtruth.getHeight();
 			byte[] in=((DataBufferByte)image.getRaster().getDataBuffer()).getData();
 			byte[] gt=((DataBufferByte)groundtruth.getRaster().getDataBuffer()).getData();
+			int tp=0, fp=0, tn=0, fn=0;
 			for(int i=0;i<len;i++){
 				if(in[i]==0){
 					if(gt[i]!=0){
 						in[i]=85;
+						++fp;
+					}else{
+						++tp;
 					}
 				}else{
 					if(gt[i]==0){
 						in[i]=(byte)170;
+						++fn;
+					}else{
+						++tn;
 					}
 				}
 			}
 			viewer.setIcon(new ImageIcon(image));
+			double recall=tp*1.0/(tp+fn);
+			double precision=tp*1.0/(tp+fp);
+			double f=2*recall*precision/(recall+precision);
+			double psnr=10*Math.log10(len*1.0/(fp+fn));
+			viewer.setHorizontalTextPosition(JLabel.CENTER);
+			viewer.setVerticalTextPosition(JLabel.BOTTOM);
+			viewer.setText("TP="+tp+"\nFP="+fp+"\nFN="+fn+"\nTN="+tn+"\nP="+precision+"\nR="+recall+"\nFM="+f+"\nPSNR="+psnr);
 		}catch(IOException ex){
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE,null,ex);
 		}

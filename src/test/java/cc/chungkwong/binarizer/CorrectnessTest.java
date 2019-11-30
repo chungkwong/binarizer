@@ -57,8 +57,7 @@ public class CorrectnessTest{
 		}
 	}
 	public static void testBernsenImplementationsEquality(File directory){
-//		int[] sizes=getSequence(1,2,25);
-		int[] sizes=getSequence(1,2,10);
+		int[] sizes=getSequence(1,2,25);
 		double[] weights=getSequence(0.4,0.1,3);
 		testEquality(directory,IntStream.of(sizes).mapToObj((window)
 				->DoubleStream.of(weights).mapToObj((weight)->new Binarizer[]{
@@ -70,8 +69,7 @@ public class CorrectnessTest{
 		testEquality(directory,Arrays.stream(formulas).map((f)->new NiblackBasedBinarizer(f,new EfficientAlgorithm(),window)).toArray(Binarizer[]::new));
 	}
 	public static void testNiblackImplementationsEquality(File directory){
-//		int[] sizes=getSequence(1,2,25);
-		int[] sizes=getSequence(1,4,10);
+		int[] sizes=getSequence(1,2,25);
 		double[] weights=getSequence(0.2,0.1,4);
 		testEquality(directory,IntStream.of(sizes).mapToObj((window)
 				->DoubleStream.of(weights).mapToObj((weight)->NiblackBasedBinarizer.getSauvola(weight)).map((formula)->new Binarizer[]{
@@ -81,11 +79,9 @@ public class CorrectnessTest{
 		})).flatMap((s)->s).toArray(Binarizer[][]::new));
 	}
 	public static void main(String[] args){
-//		testNiblackImplementationsEquality(new File("../datasets/binarization/all/test"));
-		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getNiblack(0.2),NiblackBasedBinarizer.getNiblackLegacy(0.2));
-		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getNiblack(-0.5),NiblackBasedBinarizer.getNiblackLegacy(-0.5));
+		testNiblackImplementationsEquality(new File("../datasets/binarization/all/test"));
 		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(0.2),NiblackBasedBinarizer.getSauvolaLegacy(0.2));
 		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(-0.2),NiblackBasedBinarizer.getSauvolaLegacy(-0.2));
-//		testBernsenImplementationsEquality(new File("../datasets/binarization/all/test"));
+		testBernsenImplementationsEquality(new File("../datasets/binarization/all/test"));
 	}
 }

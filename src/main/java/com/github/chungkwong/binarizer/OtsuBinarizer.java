@@ -20,10 +20,14 @@ package com.github.chungkwong.binarizer;
  * @author Chan Chung Kwong
  */
 public class OtsuBinarizer extends GlobalBinarizer{
+	public OtsuBinarizer(){
+		super(false);
+	}
 	@Override
 	protected int getThreshold(byte[] pixels,int width,int height){
-		int[] histogram=getHistogram(pixels);
-		return getThreshold(histogram,pixels.length);
+		int length=width*height;
+		int[] histogram=getHistogram(pixels,length);
+		return getThreshold(histogram,length);
 	}
 	private int getThreshold(int[] histogram,int total){
 		double except=0, uT=0, bestVar=0;
@@ -56,9 +60,9 @@ public class OtsuBinarizer extends GlobalBinarizer{
 	 * @param pixels pixel array of the image
 	 * @return the histogram of the image
 	 */
-	private static int[] getHistogram(byte[] pixels){
+	private static int[] getHistogram(byte[] pixels,int length){
 		int[] histogram=new int[256];
-		for(int i=0;i<pixels.length;i++){
+		for(int i=0;i<length;i++){
 			++histogram[pixels[i]&0xFF];
 		}
 		return histogram;

@@ -52,8 +52,10 @@ public class IntegralImageAlgorithm implements NiblackBasedBinarizer.ThresholdAl
 	public static final long[][] getIntegralImage(byte[] pixels,int width,int height){
 		long[][] intImg=new long[height+1][width+1];
 		for(int i=1, ind=0;i<=height;i++){
+			long found=0;
 			for(int j=1;j<=width;j++,ind++){
-				intImg[i][j]=intImg[i-1][j]+intImg[i][j-1]+(pixels[ind]&0xFF)-intImg[i-1][j-1];
+				found+=(pixels[ind]&0xFF);
+				intImg[i][j]=intImg[i-1][j]+found;
 			}
 		}
 		return intImg;
@@ -69,8 +71,10 @@ public class IntegralImageAlgorithm implements NiblackBasedBinarizer.ThresholdAl
 	public static final long[][] getSquaredIntegralImage(byte[] pixels,int width,int height){
 		long[][] intImg=new long[height+1][width+1];
 		for(int i=1, ind=0;i<=height;i++){
+			long found=0;
 			for(int j=1;j<=width;j++,ind++){
-				intImg[i][j]=intImg[i-1][j]+intImg[i][j-1]+square(pixels[ind]&0xFF)-intImg[i-1][j-1];
+				found+=square((pixels[ind]&0xFF));
+				intImg[i][j]=intImg[i-1][j]+found;
 			}
 		}
 		return intImg;

@@ -107,10 +107,7 @@ public class QualityTest{
 				}
 			}
 		}
-		return 10*Math.log10(r.length*1.0/(fp+fn));
-	}
-	private static byte[] getData(BufferedImage image){
-		return ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
+		return 10*Math.log10(len*1.0/(fp+fn));
 	}
 	public static <T> void gridRecord(File directory,File groundtruths,File tsv,Function<T,Binarizer> factory,T[] parameters){
 		try(BufferedWriter out=Files.newBufferedWriter(tsv.toPath())){
@@ -230,12 +227,14 @@ public class QualityTest{
 //		tune("2010_.*","2010_.*");
 //		tune("2009_.*","2010_.*");
 //		tune("2009_.*","2009_.*");
-		tune(".*",".*");
-//		testQuality(new File("../datasets/binarization/all/test"),new File("../datasets/binarization/all/gt"),
-//				new FixedBinarizer(75),
-//				new OtsuBinarizer(),
-//				new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvola(0.32),new EfficientAlgorithm(),21),
-//				new BernsenBinarizer(11,11,0.5,80));
+//		tune("(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10|2018_).*",".*");
+//		tune("(2009_P|2011_PR|2013_PR|2017_1[1-9]|2017_20).*",".*");
+//		tune(".*",".*");
+		testQuality(new File("../datasets/binarization/2018/test"),new File("../datasets/binarization/2018/gt"),
+				new FixedBinarizer(75),
+				new OtsuBinarizer(),
+				new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvola(0.32),new EfficientAlgorithm(),21),
+				new BernsenBinarizer(11,11,0.5,80));
 	}
 	private static void buildIndex(){
 		EfficientAlgorithm algorithm=new EfficientAlgorithm();
