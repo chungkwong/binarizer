@@ -16,7 +16,6 @@
  */
 package cc.chungkwong.binarizer;
 import static cc.chungkwong.binarizer.BinarizerTest.getSequence;
-import com.github.chungkwong.binarizer.*;
 import java.awt.image.*;
 import java.io.*;
 import java.util.*;
@@ -79,9 +78,9 @@ public class CorrectnessTest{
 		})).flatMap((s)->s).toArray(Binarizer[][]::new));
 	}
 	public static void main(String[] args){
-		testNiblackImplementationsEquality(new File("../datasets/binarization/all/test"));
-		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(0.2),NiblackBasedBinarizer.getSauvolaLegacy(0.2));
-		testFormulaEquality(new File("../datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(-0.2),NiblackBasedBinarizer.getSauvolaLegacy(-0.2));
-		testBernsenImplementationsEquality(new File("../datasets/binarization/all/test"));
+		testNiblackImplementationsEquality(new File(System.getProperty("user.home"),"datasets/binarization/all/test"));
+//		testFormulaEquality(new File(System.getProperty("user.home"),"datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(0.2),NiblackBasedBinarizer.getSauvolaLegacy(0.2));
+//		testFormulaEquality(new File(System.getProperty("user.home"),"datasets/binarization/all/test"),25,NiblackBasedBinarizer.getSauvola(-0.2),NiblackBasedBinarizer.getSauvolaLegacy(-0.2));
+//		testBernsenImplementationsEquality(new File(System.getProperty("user.home"),"datasets/binarization/all/test"));
 	}
 }

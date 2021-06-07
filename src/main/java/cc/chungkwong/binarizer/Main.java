@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.binarizer;
+package cc.chungkwong.binarizer;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
@@ -68,89 +68,6 @@ public class Main extends JFrame{
 		toolbar.add(save);
 		output.add(toolbar,BorderLayout.SOUTH);
 		JPanel input=new JPanel(new BorderLayout());
-		class MethodChooser extends JPanel{
-			JRadioButton fixed=new JRadioButton("Fixed",false);
-			JRadioButton otsu=new JRadioButton("Otsu",false);
-			JRadioButton sauvola=new JRadioButton("Sauvola",true);
-			JRadioButton niblack=new JRadioButton("Niblack",false);
-			JRadioButton bernsen=new JRadioButton("Bernsen",false);
-			JTextField sauvolaWeight=new JTextField("0.32");
-			JTextField sauvolaWindow=new JTextField("21");
-			JTextField niblackWeight=new JTextField("0.5");
-			JTextField niblackWindow=new JTextField("32");
-			JTextField bernsenWeight=new JTextField("0.5");
-			JTextField bernsenContrast=new JTextField("80");
-			JTextField bernsenWindow=new JTextField("11");
-			JTextField fixedThreshold=new JTextField("128");
-			public MethodChooser(){
-				setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-				ButtonGroup group=new ButtonGroup();
-				Box fixedBar=Box.createHorizontalBox();
-				fixedBar.add(fixed);
-				fixedBar.add(new JLabel("Threshold:"));
-				fixedBar.add(fixedThreshold);
-				group.add(fixed);
-				fixedBar.setAlignmentX(0);
-				add(fixedBar);
-				group.add(otsu);
-				otsu.setAlignmentX(0);
-				add(otsu);
-				Box sauvolaBar=Box.createHorizontalBox();
-				sauvolaBar.add(sauvola);
-				sauvolaBar.add(new JLabel("Window size:"));
-				sauvolaBar.add(sauvolaWindow);
-				sauvolaBar.add(new JLabel("Weight:"));
-				sauvolaBar.add(sauvolaWeight);
-				group.add(sauvola);
-				sauvolaBar.setAlignmentX(0);
-				add(sauvolaBar);
-				Box niblackBar=Box.createHorizontalBox();
-				niblackBar.add(niblack);
-				niblackBar.add(new JLabel("Window size:"));
-				niblackBar.add(niblackWindow);
-				niblackBar.add(new JLabel("Weight:"));
-				niblackBar.add(niblackWeight);
-				group.add(niblack);
-				niblackBar.setAlignmentX(0);
-				add(niblackBar);
-				Box bernsenBar=Box.createHorizontalBox();
-				bernsenBar.add(bernsen);
-				bernsenBar.add(new JLabel("Window size:"));
-				bernsenBar.add(bernsenWindow);
-				bernsenBar.add(new JLabel("Min contrast:"));
-				bernsenBar.add(bernsenContrast);
-				bernsenBar.add(new JLabel("Weight:"));
-				bernsenBar.add(bernsenWeight);
-				group.add(bernsen);
-				bernsenBar.setAlignmentX(0);
-				add(bernsenBar);
-			}
-			public Binarizer getBinarizer(){
-				if(otsu.isSelected()){
-					return new OtsuBinarizer();
-				}else if(fixed.isSelected()){
-					return new FixedBinarizer(Integer.parseInt(fixedThreshold.getText()));
-				}else if(sauvola.isSelected()){
-					return new NiblackBasedBinarizer(
-							NiblackBasedBinarizer.getSauvola(Double.parseDouble(sauvolaWeight.getText())),
-							new EfficientAlgorithm(),
-							Integer.parseInt(sauvolaWindow.getText()));
-				}else if(niblack.isSelected()){
-					return new NiblackBasedBinarizer(
-							NiblackBasedBinarizer.getNiblack(Double.parseDouble(niblackWeight.getText())),
-							new EfficientAlgorithm(),
-							Integer.parseInt(niblackWindow.getText()));
-				}else if(bernsen.isSelected()){
-					return new BernsenBinarizer(
-							Integer.parseInt(bernsenWindow.getText()),
-							Integer.parseInt(bernsenWindow.getText()),
-							Double.parseDouble(bernsenWeight.getText()),
-							Integer.parseInt(bernsenContrast.getText()));
-				}else{
-					return new OtsuBinarizer();
-				}
-			}
-		}
 		MethodChooser methodChooser=new MethodChooser();
 		input.add(new JScrollPane(methodChooser),BorderLayout.SOUTH);
 		JFileChooser fileChooser=new JFileChooser();
@@ -180,6 +97,89 @@ public class Main extends JFrame{
 		tabs.add(component,index);
 		tabs.setTabComponentAt(index,header);
 		tabs.setSelectedIndex(index);
+	}
+	public static class MethodChooser extends JPanel{
+		JRadioButton fixed=new JRadioButton("Fixed",false);
+		JRadioButton otsu=new JRadioButton("Otsu",false);
+		JRadioButton sauvola=new JRadioButton("Sauvola",true);
+		JRadioButton niblack=new JRadioButton("Niblack",false);
+		JRadioButton bernsen=new JRadioButton("Bernsen",false);
+		JTextField sauvolaWeight=new JTextField("0.32");
+		JTextField sauvolaWindow=new JTextField("21");
+		JTextField niblackWeight=new JTextField("0.5");
+		JTextField niblackWindow=new JTextField("32");
+		JTextField bernsenWeight=new JTextField("0.5");
+		JTextField bernsenContrast=new JTextField("80");
+		JTextField bernsenWindow=new JTextField("11");
+		JTextField fixedThreshold=new JTextField("128");
+		public MethodChooser(){
+			setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+			ButtonGroup group=new ButtonGroup();
+			Box fixedBar=Box.createHorizontalBox();
+			fixedBar.add(fixed);
+			fixedBar.add(new JLabel("Threshold:"));
+			fixedBar.add(fixedThreshold);
+			group.add(fixed);
+			fixedBar.setAlignmentX(0);
+			add(fixedBar);
+			group.add(otsu);
+			otsu.setAlignmentX(0);
+			add(otsu);
+			Box sauvolaBar=Box.createHorizontalBox();
+			sauvolaBar.add(sauvola);
+			sauvolaBar.add(new JLabel("Window size:"));
+			sauvolaBar.add(sauvolaWindow);
+			sauvolaBar.add(new JLabel("Weight:"));
+			sauvolaBar.add(sauvolaWeight);
+			group.add(sauvola);
+			sauvolaBar.setAlignmentX(0);
+			add(sauvolaBar);
+			Box niblackBar=Box.createHorizontalBox();
+			niblackBar.add(niblack);
+			niblackBar.add(new JLabel("Window size:"));
+			niblackBar.add(niblackWindow);
+			niblackBar.add(new JLabel("Weight:"));
+			niblackBar.add(niblackWeight);
+			group.add(niblack);
+			niblackBar.setAlignmentX(0);
+			add(niblackBar);
+			Box bernsenBar=Box.createHorizontalBox();
+			bernsenBar.add(bernsen);
+			bernsenBar.add(new JLabel("Window size:"));
+			bernsenBar.add(bernsenWindow);
+			bernsenBar.add(new JLabel("Min contrast:"));
+			bernsenBar.add(bernsenContrast);
+			bernsenBar.add(new JLabel("Weight:"));
+			bernsenBar.add(bernsenWeight);
+			group.add(bernsen);
+			bernsenBar.setAlignmentX(0);
+			add(bernsenBar);
+		}
+		public Binarizer getBinarizer(){
+			if(otsu.isSelected()){
+				return new OtsuBinarizer();
+			}else if(fixed.isSelected()){
+				return new FixedBinarizer(Integer.parseInt(fixedThreshold.getText()));
+			}else if(sauvola.isSelected()){
+				return new NiblackBasedBinarizer(
+						NiblackBasedBinarizer.getSauvola(Double.parseDouble(sauvolaWeight.getText())),
+						new EfficientAlgorithm(),
+						Integer.parseInt(sauvolaWindow.getText()));
+			}else if(niblack.isSelected()){
+				return new NiblackBasedBinarizer(
+						NiblackBasedBinarizer.getNiblack(Double.parseDouble(niblackWeight.getText())),
+						new EfficientAlgorithm(),
+						Integer.parseInt(niblackWindow.getText()));
+			}else if(bernsen.isSelected()){
+				return new BernsenBinarizer(
+						Integer.parseInt(bernsenWindow.getText()),
+						Integer.parseInt(bernsenWindow.getText()),
+						Double.parseDouble(bernsenWeight.getText()),
+						Integer.parseInt(bernsenContrast.getText()));
+			}else{
+				return new OtsuBinarizer();
+			}
+		}
 	}
 	public static void main(String[] args){
 		new Main();

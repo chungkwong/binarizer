@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.binarizer;
+package cc.chungkwong.binarizer;
 /**
  *
  * @author Chan Chung Kwong
@@ -22,11 +22,21 @@ package com.github.chungkwong.binarizer;
 public class EfficientAlgorithm implements NiblackBasedBinarizer.ThresholdAlgorithm{
 	@Override
 	public void binarize(byte[] from,byte[] to,int width,int height,int windowWidth,int windowHeight,NiblackBasedBinarizer.ThresholdFormula formula){
-		//if(height>=width){
-		binarizeTall(from,to,width,height,windowWidth,windowHeight,formula);
-		//}else{
-		//	binarizeFat(from,to,width,height,windowWidth,windowHeight,formula);
-		//}
+		if(height>=width){
+			binarizeTall(from,to,width,height,windowWidth,windowHeight,formula);
+		}else{
+//			transpose(from,to,width,height);
+			binarizeFat(from,to,width,height,windowWidth,windowHeight,formula);
+//			binarizeTall(to,from,height,width,windowHeight,windowWidth,formula);
+//			transpose(from,to,height,width);
+		}
+	}
+	private void transpose(byte[] from,byte[] to,int width,int height){
+		for(int i=0, indFrom=0;i<height;i++){
+			for(int j=0, indTo=i;j<width;j++,indFrom++,indTo+=height){
+				to[indTo]=from[indFrom];
+			}
+		}
 	}
 	public void binarizeTall(byte[] from,byte[] to,int width,int height,int windowWidth,int windowHeight,NiblackBasedBinarizer.ThresholdFormula formula){
 		int[] integral=new int[width];

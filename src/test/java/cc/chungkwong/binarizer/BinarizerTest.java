@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.chungkwong.binarizer;
-import com.github.chungkwong.binarizer.*;
 import java.util.stream.*;
 /**
  *

@@ -14,24 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.binarizer;
+package cc.chungkwong.binarizer;
 /**
  *
  * @author Chan Chung Kwong
  */
-public abstract class GlobalBinarizer extends GrayscaleBinarizer{
-	public GlobalBinarizer(){
-	}
-	public GlobalBinarizer(boolean linear){
-		super(linear);
+public class FixedBinarizer extends GlobalBinarizer{
+	private final int threshold;
+	public FixedBinarizer(int threshold){
+		this.threshold=threshold;
 	}
 	@Override
-	protected void binarize(byte[] from,byte[] to,int width,int height){
-		int len=width*height;
-		int threshold=getThreshold(from,width,height);
-		for(int i=0;i<len;i++){
-			to[i]=(from[i]&0xFF)<=threshold?0x00:(byte)0xFF;
-		}
+	protected int getThreshold(byte[] pixels,int width,int height){
+		return threshold;
 	}
-	protected abstract int getThreshold(byte[] pixels,int width,int height);
+	@Override
+	public String toString(){
+		return "Fixed";
+	}
 }

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.chungkwong.binarizer;
-import com.github.chungkwong.binarizer.*;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.file.*;
@@ -207,7 +206,7 @@ public class QualityTest{
 //		tune("2018_.*","2018_.*");
 //		tune("2016_.*","2018_.*");
 //		tune("(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10).*","2018_.*");
-////		gridTune(new File("../datasets/binarization/fixed"),"(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10|2018_).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
+////		gridTune(new File(System.getProperty("user.home"),"datasets/binarization/fixed"),"(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10|2018_).*","2018_.*",(f,psnr)->f*100+psnr*4,100);
 //		tune("(2009_P|2011_PR|2013_PR|2017_1[1-9]|2017_20).*","2018_.*");
 //		tune("...[^8].*","2018_.*");
 //		tune("(2017_[0-9]\\.|2017_10).*","(2017_[0-9]\\.|2017_10).*");
@@ -230,7 +229,7 @@ public class QualityTest{
 //		tune("(2009_H|2010_H|2011_HW|2012_H|2013_HW|2014_H|2016_|2017_[0-9]\\.|2017_10|2018_).*",".*");
 //		tune("(2009_P|2011_PR|2013_PR|2017_1[1-9]|2017_20).*",".*");
 //		tune(".*",".*");
-		testQuality(new File("../datasets/binarization/2018/test"),new File("../datasets/binarization/2018/gt"),
+		testQuality(new File(System.getProperty("user.home"),"datasets/binarization/2018/test"),new File(System.getProperty("user.home"),"datasets/binarization/2018/gt"),
 				new FixedBinarizer(75),
 				new OtsuBinarizer(),
 				new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvola(0.32),new EfficientAlgorithm(),21),
@@ -238,44 +237,44 @@ public class QualityTest{
 	}
 	private static void buildIndex(){
 		EfficientAlgorithm algorithm=new EfficientAlgorithm();
-		gridRecord(new File("../datasets/binarization/all/test"),
-				new File("../datasets/binarization/all/gt"),
-				new File("../datasets/binarization/fixed"),
+		gridRecord(new File(System.getProperty("user.home"),"datasets/binarization/all/test"),
+				new File(System.getProperty("user.home"),"datasets/binarization/all/gt"),
+				new File(System.getProperty("user.home"),"datasets/binarization/fixed"),
 				(p)->new FixedBinarizer((int)(p[0]+0.5)),
 				zip(BinarizerTest.getSequence(1.0,1.0,255))
 		);
-		gridRecord(new File("../datasets/binarization/all/test"),
-				new File("../datasets/binarization/all/gt"),
-				new File("../datasets/binarization/niblack"),
+		gridRecord(new File(System.getProperty("user.home"),"datasets/binarization/all/test"),
+				new File(System.getProperty("user.home"),"datasets/binarization/all/gt"),
+				new File(System.getProperty("user.home"),"datasets/binarization/niblack"),
 				(p)->new NiblackBasedBinarizer(NiblackBasedBinarizer.getNiblack(p[0]),algorithm,(int)(p[1]+0.5)),
 				zip(BinarizerTest.getSequence(-2.0,0.1,21),BinarizerTest.getSequence(3.0,2.0,20))
 		);
-		gridRecord(new File("../datasets/binarization/all/test"),
-				new File("../datasets/binarization/all/gt"),
-				new File("../datasets/binarization/sauvola"),
+		gridRecord(new File(System.getProperty("user.home"),"datasets/binarization/all/test"),
+				new File(System.getProperty("user.home"),"datasets/binarization/all/gt"),
+				new File(System.getProperty("user.home"),"datasets/binarization/sauvola"),
 				(p)->new NiblackBasedBinarizer(NiblackBasedBinarizer.getSauvola(p[0]),algorithm,(int)(p[1]+0.5)),
 				zip(BinarizerTest.getSequence(0.0,0.02,40),BinarizerTest.getSequence(3.0,2.0,30))
 		);
-		gridRecord(new File("../datasets/binarization/all/test"),
-				new File("../datasets/binarization/all/gt"),
-				new File("../datasets/binarization/bernsen"),
+		gridRecord(new File(System.getProperty("user.home"),"datasets/binarization/all/test"),
+				new File(System.getProperty("user.home"),"datasets/binarization/all/gt"),
+				new File(System.getProperty("user.home"),"datasets/binarization/bernsen"),
 				(p)->new BernsenBinarizer((int)(p[0]+0.5),(int)(p[0]+0.5),p[1],(int)(p[2]+0.5)),
 				zip(BinarizerTest.getSequence(3.0,2.0,15),BinarizerTest.getSequence(0.4,0.05,5),BinarizerTest.getSequence(8.0,8,31))
 		);
-		gridRecord(new File("../datasets/binarization/all/test"),
-				new File("../datasets/binarization/all/gt"),
-				new File("../datasets/binarization/bernsen2"),
+		gridRecord(new File(System.getProperty("user.home"),"datasets/binarization/all/test"),
+				new File(System.getProperty("user.home"),"datasets/binarization/all/gt"),
+				new File(System.getProperty("user.home"),"datasets/binarization/bernsen2"),
 				(p)->new BernsenBinarizer((int)(p[0]+0.5),(int)(p[0]+0.5),p[1],(int)(p[2]+0.5)),
 				zip(BinarizerTest.getSequence(3.0,2.0,15),BinarizerTest.getSequence(0.5,0.1,1),BinarizerTest.getSequence(16.0,16,8))
 		);
 	}
 	private static File[] getIndexes(){
 		return new File[]{
-			new File("../datasets/binarization/fixed"),
-			new File("../datasets/binarization/niblack"),
-			new File("../datasets/binarization/sauvola"),
-			new File("../datasets/binarization/bernsen"),
-			new File("../datasets/binarization/bernsen2"),};
+			new File(System.getProperty("user.home"),"datasets/binarization/fixed"),
+			new File(System.getProperty("user.home"),"datasets/binarization/niblack"),
+			new File(System.getProperty("user.home"),"datasets/binarization/sauvola"),
+			new File(System.getProperty("user.home"),"datasets/binarization/bernsen"),
+			new File(System.getProperty("user.home"),"datasets/binarization/bernsen2"),};
 	}
 	private static void tune(String train,String test){
 		System.out.println(train+"\t"+test);

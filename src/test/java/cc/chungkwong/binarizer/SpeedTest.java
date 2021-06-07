@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package cc.chungkwong.binarizer;
-import com.github.chungkwong.binarizer.*;
 import java.awt.image.*;
 import java.io.*;
 import java.lang.management.*;
@@ -68,6 +67,6 @@ public class SpeedTest{
 		}
 	}
 	public static void main(String[] args){
-		testSpeed(new File("../datasets/binarization/all/test"));
+		testSpeed(new File(System.getProperty("user.home"),"datasets/binarization/all/test"));
 	}
 }
